@@ -1,0 +1,98 @@
+<div id="planter-stand-v1">
+  <div class="viz-controls">
+    <label class="form-label">Clearance <span id="ps-clearance-value">450 mm</span><input id="ps-clearance" class="form-range" type="range" min="250" max="700" step="25" value="450"></label>
+    <label class="form-label">Timber width <span id="ps-timber-value">70 mm</span><input id="ps-timber" class="form-range" type="range" min="35" max="100" step="5" value="70"></label>
+    <label class="form-check"><input id="ps-cross" class="form-check-input" type="checkbox" checked><span class="form-check-label">Centre cross-member</span></label>
+    <label class="form-check"><input id="ps-braces" class="form-check-input" type="checkbox" checked><span class="form-check-label">Diagonal side braces</span></label>
+  </div>
+  <div id="ps-canvas" role="img" aria-label="Interactive 3D model of a timber stand supporting a planter box"></div>
+  <div class="viz-row text-small text-muted"><span>Drag to orbit</span><span>Scroll to zoom</span><span>Dimensions in millimetres</span></div>
+</div>
+<style>
+  #planter-stand-v1 { width:100%; color:var(--foreground); }
+  #planter-stand-v1 .viz-controls { margin-bottom:12px; }
+  #planter-stand-v1 .form-label { min-width:170px; }
+  #planter-stand-v1 .form-range { display:block; width:170px; }
+  #ps-canvas { width:100%; height:430px; min-height:320px; background:color-mix(in srgb, var(--muted) 34%, transparent); overflow:hidden; }
+  #ps-canvas canvas { display:block; width:100%; height:100%; }
+  #planter-stand-v1 .viz-row { justify-content:space-between; margin-top:8px; }
+  @media (max-width:520px) { #ps-canvas { height:350px; } }
+</style>
+<script type="module">
+  import * as THREE from 'https://esm.sh/three@0.170.0';
+  import { OrbitControls } from 'https://esm.sh/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+
+  const root = document.getElementById('planter-stand-v1');
+  const host = root.querySelector('#ps-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(36, 1, 1, 5000);
+  camera.position.set(1150, 820, 1250);
+  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  host.appendChild(renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.target.set(0, 300, 0);
+  controls.minDistance = 650;
+  controls.maxDistance = 3000;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x667080, 2.2));
+  const key = new THREE.DirectionalLight(0xffffff, 2.4);
+  key.position.set(700, 1300, 900);
+  scene.add(key);
+  const model = new THREE.Group();
+  scene.add(model);
+
+  const timberMat = new THREE.MeshStandardMaterial({ color:0xa66a3f, roughness:.78, metalness:0 });
+  const planterMat = new THREE.MeshStandardMaterial({ color:0x5d6870, roughness:.82, transparent:true, opacity:.7 });
+  const soilMat = new THREE.MeshStandardMaterial({ color:0x4f3425, roughness:1 });
+  const braceMat = new THREE.MeshStandardMaterial({ color:0xc18a58, roughness:.8 });
+
+  function box(w,h,d,x,y,z,mat=timberMat) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    mesh.position.set(x,y,z); model.add(mesh); return mesh;
+  }
+  function braceBetween(a,b,section) {
+    const mid = new THREE.Vector3().addVectors(a,b).multiplyScalar(.5);
+    const delta = new THREE.Vector3().subVectors(b,a);
+    const mesh = box(section,delta.length(),section,mid.x,mid.y,mid.z,braceMat);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.clone().normalize());
+  }
+  function rebuild() {
+    while(model.children.length) {
+      const child=model.children.pop(); child.geometry.dispose();
+    }
+    const W=900, D=400, PH=300;
+    const clearance=Number(root.querySelector('#ps-clearance').value);
+    const tw=Number(root.querySelector('#ps-timber').value);
+    const th=45;
+    root.querySelector('#ps-clearance-value').textContent=clearance+' mm';
+    root.querySelector('#ps-timber-value').textContent=tw+' mm';
+    const topY=clearance+th/2;
+    box(W,th,tw,0,topY,-(D-tw)/2);
+    box(W,th,tw,0,topY,(D-tw)/2);
+    box(tw,th,D-2*tw,-(W-tw)/2,topY,0);
+    box(tw,th,D-2*tw,(W-tw)/2,topY,0);
+    if(root.querySelector('#ps-cross').checked) box(tw,th,D-2*tw,0,topY,0);
+    const legH=clearance;
+    for(const x of [-(W-tw)/2,(W-tw)/2]) for(const z of [-(D-tw)/2,(D-tw)/2]) box(tw,legH,tw,x,legH/2,z);
+    if(root.querySelector('#ps-braces').checked) {
+      const y0=95, y1=clearance-55;
+      braceBetween(new THREE.Vector3(-(W-tw)/2,y0,-(D-tw)/2-2),new THREE.Vector3(-80,y1,-(D-tw)/2-2),35);
+      braceBetween(new THREE.Vector3((W-tw)/2,y0,(D-tw)/2+2),new THREE.Vector3(80,y1,(D-tw)/2+2),35);
+    }
+    box(W,PH,D,0,clearance+th+PH/2,0,planterMat);
+    box(W-28,12,D-28,0,clearance+th+PH-10,0,soilMat);
+    const grid=new THREE.GridHelper(1600,16,0x7f8a94,0x7f8a94); grid.material.transparent=true; grid.material.opacity=.24; model.add(grid);
+    controls.target.set(0,(clearance+PH)/2,0);
+  }
+  function resize() {
+    const w=host.clientWidth, h=host.clientHeight;
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(host);
+  root.querySelectorAll('input').forEach(el=>el.addEventListener('input',rebuild));
+  rebuild(); resize();
+  renderer.setAnimationLoop(()=>{ controls.update(); renderer.render(scene,camera); });
+</script>

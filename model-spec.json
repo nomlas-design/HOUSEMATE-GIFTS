@@ -1,0 +1,81 @@
+{
+  "project": "balcony-planter-timber-stand",
+  "units": "mm",
+  "status": "exploratory-v4-enclosure-study",
+  "planter": {
+    "width": 900,
+    "depth": 450,
+    "height": 300,
+    "loadedMassKg": null,
+    "productReference": "Giantex B0BYKD5FZT",
+    "trellisIsSeparateAttachedObject": true,
+    "overallProductHeightMmListingDerived": 1842,
+    "roofExtensionMmListingDerived": 241,
+    "soilCavityShown": false,
+    "drawnExistingStructure": {
+      "cornerMemberMm": 50,
+      "railFaceMm": 40,
+      "lowerRailOffsetMm": 60,
+      "floorThicknessMm": 15,
+      "floorUndersideOffsetMm": 80
+    }
+  },
+  "stand": {
+    "desiredClearance": 450,
+    "clearanceDefinitionNeedsConfirmation": true,
+    "material": "timber",
+    "timberSpecies": null,
+    "timberGrade": null,
+    "currentDisplayedFaceWidth": 90,
+    "currentDisplayedMemberThickness": 35,
+    "currentLayout": {
+      "topPerimeterFrame": true,
+      "cornerLegs": 4,
+      "depthwiseSupports": 3,
+      "rearDiagonalBracing": false,
+      "endDiagonalBracing": false,
+      "rearStructuralShearPanel": "12mm exterior structural plywood",
+      "concealedSideGussets": 2,
+      "cubeBaseFrame": true,
+      "baseFrameSectionMm": "45x35 provisional, reduced from 70x35",
+      "frontHatch": true,
+      "hatchIsStructuralBracing": false,
+      "provisionalTimberSectionMm": "90x45 top bearers; 70x35 legs and top joists; 45x35 lower frame",
+      "braceSectionMm": "12mm structural plywood rear panel and side gussets",
+      "hatchFrameSectionMm": "42x19",
+      "maximumRiserFootprintMm": "900x450",
+      "hatchFlushWithinFootprint": true,
+      "defaultIsolationPadHeightMm": 6,
+      "adjustableFootHeightMmOptional": 25,
+      "topBearersOnEdge": true,
+      "joistHangersShown": true,
+      "planterCaptureBlocks": 0,
+      "removableAngleHoldDowns": 0,
+      "concealedPostToUprightSpliceStraps": 4,
+      "spliceStrapRole": "lateral and uplift restraint only; planter posts remain directly bearing on the top frame",
+      "litterFitOutTBC": {
+        "removableFloorMm": "760x380x12 on a concealed 70x35 centre bearer",
+        "placeholderTraysMm": "2 at 350x330x110",
+        "sideWalls": "12mm provisional lining, nested from common exterior sheet",
+        "catFlapMm": "230x230 provisional",
+        "frontAccess": "full-width top-hinged hatch"
+      }
+    }
+  },
+  "constraints": {
+    "location": "sheltered balcony, Melbourne, Australia",
+    "storageUnderneath": true,
+    "requiredStorageOpening": null,
+    "anchoringAllowed": null,
+    "weatherExposure": "sheltered balcony; wind not governing per user",
+    "catJumpImpact": true
+  },
+  "nextTasks": [
+    "Confirm loaded mass and planter bottom support requirements",
+    "Confirm timber species, grade and available stock sizes",
+    "Confirm clearance definition and storage access envelope",
+    "Compare open-front, end-trestle and rear-panel-braced layouts",
+    "Check bending, deflection, racking, connections, sliding and overturning",
+    "Update interactive model and prepare a cut list"
+  ]
+}
