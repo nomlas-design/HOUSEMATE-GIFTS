@@ -2,6 +2,10 @@
   "project": "balcony-planter-timber-stand",
   "units": "mm",
   "status": "exploratory-v4-enclosure-study",
+  "deliverables": {
+    "googleDriveBomUrl": "https://docs.google.com/spreadsheets/d/17lhc3XEj4TIMcd2DnRqaSLjiXf868RQOQRitDx6vPOU/edit",
+    "localBomPath": "deliverables/bom/planter-riser-bom.xlsx"
+  },
   "planter": {
     "width": 900,
     "depth": 450,

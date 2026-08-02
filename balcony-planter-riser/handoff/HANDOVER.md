@@ -2,6 +2,22 @@
 
 Append new entries at the top beneath this introduction. Do not rewrite older entries; supersede them explicitly.
 
+## 2026-08-02 - Published model BOM link
+
+### Objective
+
+Connect the component popup in the published 3D model to the collaborative Google Drive BOM.
+
+### Changes
+
+- Made `Open BOM in Google Drive` the primary BOM link in both the canonical model and published-site copy.
+- Kept a separate `Download XLSX` link for the packaged workbook.
+- Recorded the Drive BOM URL in `model-spec.json`.
+
+### Verification
+
+- Confirmed the canonical and published model copies contain the same Google Drive sheet URL.
+
 ## 2026-08-02 - Uniform direct-bearing uprights and three-section frame
 
 ### Changes
