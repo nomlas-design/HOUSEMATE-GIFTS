@@ -2,6 +2,63 @@
 
 Append new entries at the top beneath this introduction. Do not rewrite older entries; supersede them explicitly.
 
+## 2026-08-02 - Increased direct-bearing uprights to 70 x 70
+
+### Objective
+
+Ensure the existing 50 x 50 planter feet sit fully within the uprights rather than spilling over a 70 x 35 bearing surface.
+
+### Changes
+
+- Changed LG-01 through LG-04 from 70 x 35 to 70 x 70 while retaining their 514 mm cut length and direct-bearing role.
+- Aligned the square uprights to the planter envelope outer faces, giving each foot 20 mm total additional bearing in both plan directions without shifting the planter.
+- Increased the default isolation pads to 70 x 70.
+- Split the timber purchase plan into one 2.4 m length of 70 x 70 post stock and two 2.4 m lengths of 70 x 35 rail stock.
+- Synchronized the interactive model, specification, BOM and published-site copy.
+
+### Verification and unresolved
+
+- The 50 x 50 planter feet are fully contained by the 70 x 70 upright tops in plan.
+- Exact 70 x 70 treated-post catalogue SKU, timber grade, wet planter load, connectors and balcony capacity remain to be confirmed.
+
+## 2026-08-02 - Matched TB-01 and TB-02
+
+### Objective
+
+Make the front and rear upper ties identical and remove unnecessary 90 x 45 framing.
+
+### Changes
+
+- Changed TB-01 from a 900 x 90 x 45 front bearer to a 760 x 70 x 35 non-bearing front upper tie matching TB-02.
+- Kept all four planter feet in direct bearing through LG-01 to LG-04; both upper ties now sit between the uprights.
+- Lengthened TJ-01 to TJ-03 to 380 mm so they meet the two 35 mm-thick ties without gaps.
+- Shortened LG-01 to LG-04 to 514 mm above the default 6 mm pads, preserving 450 mm clear space below the upper ties.
+- Removed the obsolete beam-depth slider and the dormant legacy 90 x 45 model block.
+- Revised the purchase plan to three 2.4 m lengths of 70 x 35; no 90 x 45 framing remains.
+- Regenerated the XLSX BOM and resynced the native Google Drive BOM, including its table ranges and total row.
+
+### Verification and unresolved
+
+- Model and published-site source use matching TB geometry.
+- Local workbook formula scan and Google Sheet `#REF!` scans returned no errors.
+- This remains exploratory: timber grade, wet planter load, connector schedule and balcony capacity still require confirmation.
+
+## 2026-08-02 - Published model BOM link
+
+### Objective
+
+Connect the component popup in the published 3D model to the collaborative Google Drive BOM.
+
+### Changes
+
+- Made `Open BOM in Google Drive` the primary BOM link in both the canonical model and published-site copy.
+- Kept a separate `Download XLSX` link for the packaged workbook.
+- Recorded the Drive BOM URL in `model-spec.json`.
+
+### Verification
+
+- Confirmed the canonical and published model copies contain the same Google Drive sheet URL.
+
 ## 2026-08-02 - Uniform direct-bearing uprights and three-section frame
 
 ### Changes
