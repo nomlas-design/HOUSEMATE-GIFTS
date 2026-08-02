@@ -8,9 +8,10 @@
     :root{color-scheme:dark;--bg:#151719;--panel:#202326;--text:#eef1f3;--muted:#aeb6bc;--line:#3a4045;--accent:#e6a45a}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,sans-serif}
     header{padding:14px 18px 10px;border-bottom:1px solid var(--line)} h1{font-size:18px;margin:0 0 4px} p{margin:0;color:var(--muted)}
-    .controls{display:flex;flex-wrap:wrap;gap:14px 24px;padding:12px 18px;background:var(--panel);align-items:end}
+    .controls{display:flex;flex-wrap:wrap;gap:12px 20px;padding:12px 18px;background:var(--panel);align-items:end}
+    .control-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 10px;border:1px solid var(--line);border-radius:7px}.control-group legend{padding:0 5px;color:var(--muted);font-size:12px}
     label{display:grid;gap:5px;min-width:180px}.check{display:flex;align-items:center;gap:7px;min-width:auto;padding-bottom:3px}input[type=range]{width:180px}button{padding:7px 11px;border:1px solid #596169;border-radius:5px;background:#30353a;color:var(--text);cursor:pointer}
-    #canvas{position:relative;height:calc(100vh - 168px);min-height:480px} canvas{display:block;width:100%;height:100%}
+    #canvas{position:relative;height:calc(100vh - 230px);min-height:480px} canvas{display:block;width:100%;height:100%}
     #partDetails{position:absolute;z-index:2;top:14px;right:14px;width:min(330px,calc(100% - 28px));padding:12px 14px;border:1px solid #596169;border-radius:8px;background:rgba(24,27,29,.94);box-shadow:0 8px 28px rgba(0,0,0,.35);pointer-events:auto}
     #partDetails[hidden]{display:none}
     #partDetails strong{display:block;color:#ffcf66;font-size:16px;margin-bottom:5px}#partDetails span{display:block;color:var(--text);line-height:1.45}#partDetails .hint{color:var(--muted);font-size:12px;margin-top:6px}
@@ -25,15 +26,23 @@
     <label>Clear space beneath <span id="clearanceOut">450 mm</span><input id="clearance" type="range" min="300" max="650" step="25" value="450"></label>
     <label>Riser beam depth <span id="timberOut">90 mm</span><input id="timber" type="range" min="70" max="120" step="5" value="90"></label>
     <label>Explode riser planks <span id="explodeOut">0 mm</span><input id="explode" type="range" min="0" max="180" step="10" value="0"></label>
-    <label class="check"><input id="rearBrace" type="checkbox" checked> Rear shear panel</label>
-    <label class="check"><input id="endBraces" type="checkbox" checked> Concealed side gussets</label>
-    <label class="check"><input id="cubeFrame" type="checkbox" checked> Cube base frame</label>
-    <label class="check"><input id="hatch" type="checkbox" checked> Front hatch</label>
-    <label class="check"><input id="enclosure" type="checkbox" checked> Litter fit-out (TBC)</label>
-    <label class="check"><input id="adjustableFeet" type="checkbox"> Adjustable 25 mm feet</label>
-    <label class="check"><input id="connections" type="checkbox" checked> Connection hardware</label>
-    <label class="check"><input id="trellis" type="checkbox" checked> Attached trellis</label>
-    <label class="check"><input id="cat" type="checkbox" checked> Cat impact indicator</label>
+    <fieldset class="control-group"><legend>Added structure categories</legend>
+      <label class="check"><input id="mainFrame" type="checkbox" checked> Main frame</label>
+      <label class="check"><input id="cubeFrame" type="checkbox" checked> Lower cube frame</label>
+      <label class="check"><input id="panels" type="checkbox" checked> Structural panels (plywood)</label>
+      <label class="check"><input id="hatch" type="checkbox" checked> Hatch &amp; access</label>
+      <label class="check"><input id="enclosure" type="checkbox" checked> Litter fit-out</label>
+      <label class="check"><input id="connections" type="checkbox" checked> Hardware &amp; fixings</label>
+      <label class="check"><input id="isolation" type="checkbox" checked> Isolation / feet</label>
+    </fieldset>
+    <fieldset class="control-group"><legend>Existing / context</legend>
+      <label class="check"><input id="planterContext" type="checkbox" checked> Existing planter</label>
+      <label class="check"><input id="trellis" type="checkbox" checked> Attached trellis</label>
+      <label class="check"><input id="cat" type="checkbox" checked> Cat impact indicator</label>
+    </fieldset>
+    <label class="check"><input id="adjustableFeet" type="checkbox"> Use adjustable 25 mm feet</label>
+    <button id="frameOnly" type="button">Main frame only</button>
+    <button id="showAll" type="button">Show all categories</button>
     <label class="check"><input id="panMode" type="checkbox"> Pan with left-drag</label>
     <button id="resetView" type="button">Reset view</button>
   </div>
@@ -66,28 +75,31 @@
       clearanceOut.textContent=clear+' mm';timberOut.textContent=beamH+' mm';explodeOut.textContent=e+' mm';
       const topBottom=clear,topY=clear+beamH/2,planterBase=clear+beamH;
       const riser=new THREE.Group();riser.name='Riser (new)';model.add(riser);
-      // Optimised frame: deep timber only on the two long top bearers.
-      box(riser,W,beamH,topT,0,topY,-(D-topT)/2-e,mat.riser).name=`TB-01 - front top bearer 900x${beamH}x45`;
-      box(riser,W,beamH,topT,0,topY,(D-topT)/2+e,mat.riser).name=`TB-02 - rear top bearer 900x${beamH}x45`;
       const joistXs=[-(W-slimFace)/2,0,(W-slimFace)/2];
-      for(const [i,x] of joistXs.entries())box(riser,slimT,slimFace,D-2*topT,x+(x===0?0:Math.sign(x)*e*.25),planterBase-slimFace/2+e*.45,0,mat.brace).name=`TJ-0${i+1} - depthwise joist 310x70x35`;
-      let legIndex=1;
-      for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
-        const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
-        box(riser,slimFace,clear-footH,slimT,ex,footH+(clear-footH)/2,ez,mat.brace).name=`LG-0${legIndex} - corner leg ${clear-footH}x70x35`;
-        box(riser,adjustableFeet.checked?104:70,footH,adjustableFeet.checked?59:45,ex,footH/2,ez,mat.pad).name=adjustableFeet.checked?`PD-0${legIndex} - 25 mm adjustable foot`:`IP-0${legIndex} - 6 mm rubber isolation pad`;legIndex++;
+      // Optimised frame: all four planter feet bear on full-height uprights; TB-02 ties the rear pair at joist level.
+      if(mainFrame.checked){
+        box(riser,W,beamH,topT,0,topY,-(D-topT)/2-e,mat.riser).name=`TB-01 - front top bearer 900x${beamH}x45`;
+        box(riser,W-2*slimFace,slimFace,slimT,0,planterBase-slimFace/2,(D-slimT)/2+e,mat.brace).name=`TB-02 - rear upper tie 760x70x35 (non-bearing)`;
+        const joistLength=D-topT-slimT;
+        for(const [i,x] of joistXs.entries())box(riser,slimT,slimFace,joistLength,x+(x===0?0:Math.sign(x)*e*.25),planterBase-slimFace/2+e*.45,(slimT-topT)/4,mat.brace).name=`TJ-0${i+1} - depthwise joist ${joistLength}x70x35`;
+        let legIndex=1;
+        for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
+          const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
+          const legH=planterBase-footH;
+          box(riser,slimFace,legH,slimT,ex,footH+legH/2,ez,mat.brace).name=`LG-0${legIndex} - direct-bearing upright ${legH}x70x35`;legIndex++;
+        }
       }
-      if(cubeFrame.checked){
+      if(mainFrame.checked&&cubeFrame.checked){
         box(riser,W-2*slimFace,baseFace,baseT,0,footH+baseFace/2,-(D-baseT)/2-e*.75,mat.brace).name='BL-01 - front bottom rail 760x45x35';
         box(riser,W-2*slimFace,baseFace,baseT,0,footH+baseFace/2,(D-baseT)/2+e*.75,mat.brace).name='BL-02 - rear bottom rail 760x45x35';
         box(riser,baseT,baseFace,D-2*baseT,-(W-slimFace)/2-e*.75,footH+baseFace/2,0,mat.brace).name='BE-01 - left bottom rail 380x45x35';
         box(riser,baseT,baseFace,D-2*baseT,(W-slimFace)/2+e*.75,footH+baseFace/2,0,mat.brace).name='BE-02 - right bottom rail 380x45x35';
       }
       const panelH=clear-footH-baseFace;
-      if(rearBrace.checked)box(riser,W-2*slimFace,panelH,12,0,footH+slimFace+panelH/2,(D-slimT)/2-8+e,mat.hatch).name=`SP-01 - rear shear panel 760x${panelH}x12`;
-      if(endBraces.checked){
-        sideGusset(riser,-(W-2*slimFace)/2-e,clear-160,(D-slimT)/2,`SG-01 - left triangular side gusset 160x160x12`);
-        sideGusset(riser,(W-2*slimFace)/2+e,clear-160,(D-slimT)/2-160,`SG-02 - right triangular side gusset 160x160x12`,true);
+      if(panels.checked){
+        box(riser,W-2*slimFace,panelH,12,0,footH+baseFace+panelH/2,(D-slimT)/2-8+e,mat.hatch).name=`SP-01 - structural rear wall 760x${panelH}x12`;
+        box(riser,12,panelH,D-2*baseT,-(W-2*slimFace)/2-e,footH+baseFace+panelH/2,0,mat.wall).name=`WL-01 - structural left wall 380x${panelH}x12`;
+        box(riser,12,panelH,D-2*baseT,(W-2*slimFace)/2+e,footH+baseFace+panelH/2,0,mat.wall).name=`WL-02 - structural right wall 380x${panelH}x12`;
       }
       if(hatch.checked){
         const hatchW=W-2*slimFace-20,hatchH=clear-footH-baseFace-20,hatchFace=42,hatchT=19;
@@ -97,19 +109,22 @@
         box(riser,hatchW,hatchFace,hatchT,0,clear-10-hatchFace/2,-D/2+hatchT/2-e,mat.frame).name=`HF-T - hatch top rail ${hatchW}x42x19`;
         for(const [i,x] of [-(hatchW-hatchFace)/2,(hatchW-hatchFace)/2].entries())box(riser,hatchFace,hatchH-2*hatchFace,hatchT,x,footH+baseFace+10+hatchH/2,-D/2+hatchT/2-e,mat.frame).name=`HF-${i?'R':'L'} - hatch stile ${hatchH-2*hatchFace}x42x19`;
         box(riser,230,230,14,-190,footH+baseFace+15+115,-D/2-8-e,mat.door).name='CD-01 - provisional cat flap 230x230';
-        box(riser,hatchW,8,8,0,clear-5,-D/2-5-e,mat.steel).name='HN-01 - full-width top hatch hinge';
       }
       if(enclosure.checked){
         const floorBottom=footH+baseFace,floorT=12,floorW=W-2*slimFace,floorD=D-2*baseT,floorTop=floorBottom+floorT,wallH=clear-floorTop-10;
         box(riser,70,35,floorD,0,floorBottom-17.5,0,mat.brace).name=`FS-01 - concealed centre floor bearer ${floorD}x70x35`;
         box(riser,floorW,floorT,floorD,0,floorBottom+floorT/2,0,mat.hatch).name=`FL-01 - removable litter floor ${floorW}x${floorD}x12`;
-        box(riser,12,wallH,floorD,-(floorW/2-18),floorTop+wallH/2,0,mat.wall).name=`WL-01 - left enclosure wall TBC ${floorD}x${wallH}x12`;
-        box(riser,12,wallH,floorD,(floorW/2-18),floorTop+wallH/2,0,mat.wall).name=`WL-02 - right enclosure wall TBC ${floorD}x${wallH}x12`;
         for(const [i,x] of [-185,185].entries()){
           const tw=350,td=330,th=110,tt=8,y=floorTop;
           const trayName=`LT-0${i+1} - placeholder litter tray 350x330x110`;
           box(riser,tw,tt,td,x,y+tt/2,0,mat.tray).name=trayName;
           box(riser,tw,th,tt,x,y+th/2,-(td-tt)/2,mat.tray).name=trayName;box(riser,tw,th,tt,x,y+th/2,(td-tt)/2,mat.tray).name=trayName;box(riser,tt,th,td,-(tw-tt)/2+x,y+th/2,0,mat.tray).name=trayName;box(riser,tt,th,td,(tw-tt)/2+x,y+th/2,0,mat.tray).name=trayName;
+        }
+      }
+      if(isolation.checked){
+        let padIndex=1;for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
+          const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
+          box(riser,adjustableFeet.checked?104:70,footH,adjustableFeet.checked?59:45,ex,footH/2,ez,mat.pad).name=adjustableFeet.checked?`PD-0${padIndex} - 25 mm adjustable foot`:`IP-0${padIndex} - 6 mm rubber isolation pad`;padIndex++;
         }
       }
       if(false){
@@ -139,20 +154,33 @@
       if(connections.checked){
         const hardware=new THREE.Group();hardware.name='Provisional connectors and removable hold-downs';hardware.visible=e===0;model.add(hardware);
         // Joist-hanger plates at both ends of each depthwise joist.
-        for(const [i,x] of joistXs.entries())for(const z of [-(D-2*topT)/2,(D-2*topT)/2]){const code=`JH-0${i+1}`;box(hardware,slimT+12,slimFace-12,4,x,planterBase-slimFace/2,z,mat.steel).name=`${code} - 35x70 joist connector`;bolt(hardware,x,planterBase-52,z-3,'z').name=`${code} - connector fixing`;bolt(hardware,x,planterBase-20,z-3,'z').name=`${code} - connector fixing`}
+        for(const [i,x] of joistXs.entries())for(const [end,z] of [-(D-2*topT)/2,(D-2*topT)/2].entries()){
+          const code=`JH-0${i+1}`;
+          box(hardware,slimT+12,slimFace-12,4,x,planterBase-slimFace/2,z,mat.steel).name=`${code} - 35x70 joist connector`;
+          bolt(hardware,x,planterBase-52,z-3,'z').name=`JF-${String(i*4+end*2+1).padStart(2,'0')} - connector fixing screw`;
+          bolt(hardware,x,planterBase-20,z-3,'z').name=`JF-${String(i*4+end*2+2).padStart(2,'0')} - connector fixing screw`;
+        }
         // Concealed splice straps tie each planter post to the riser upright; timber remains the vertical bearing path.
         const px=(W-50)/2,pz=(D-50)/2;
         let cornerIndex=1;for(const sx of [-1,1])for(const sz of [-1,1]){
           const code=`ST-${String(cornerIndex).padStart(2,'0')}`,strapZ=sz*(D/2+1.5);
           box(hardware,40,300,3,sx*px,planterBase-45,strapZ,mat.steel).name=`${code} - concealed post-to-upright splice strap 300x40x3`;
-          bolt(hardware,sx*px,planterBase-140,sz*(D/2+3),'z').name=`${code} - lower M8 fixing into riser upright`;
-          bolt(hardware,sx*px,planterBase+55,sz*(D/2+3),'z').name=`${code} - upper M8 fixing into planter post`;cornerIndex++;
+          bolt(hardware,sx*px,planterBase-140,sz*(D/2+3),'z').name=`SB-${String((cornerIndex-1)*2+1).padStart(2,'0')} - lower M8 strap bolt`;
+          bolt(hardware,sx*px,planterBase+55,sz*(D/2+3),'z').name=`SB-${String((cornerIndex-1)*2+2).padStart(2,'0')} - upper M8 strap bolt`;cornerIndex++;
+        }
+        if(hatch.checked){
+          const hatchW=W-2*slimFace-20;
+          box(hardware,hatchW,8,8,0,clear-5,-D/2-5-e,mat.steel).name='HN-01 - full-width top hatch hinge';
+          box(hardware,34,48,12,hatchW/2-52,footH+baseFace+28,-D/2-9-e,mat.steel).name='HL-01 - provisional hatch latch';
+          for(const [i,x] of [-hatchW/2+45,hatchW/2-45].entries())brace(hardware,new THREE.Vector3(x,clear-42,-D/2-8-e),new THREE.Vector3(x,clear-132,-D/2+52-e),8,mat.steel).name=`HS-0${i+1} - provisional hatch stay`;
         }
       }
 
+      const post=50;
+      if(planterContext.checked){
       const planter=new THREE.Group();planter.name='Existing planter box';model.add(planter);
       // Owner sketch: 50 mm corner posts, 40 mm rails, lower rail centreline 60 mm above underside.
-      const post=50,rail=40,lowerOffset=60;
+      const rail=40,lowerOffset=60;
       for(const x of [-(W-post)/2,(W-post)/2])for(const z of [-(D-post)/2,(D-post)/2])box(planter,post,bodyH,post,x,planterBase+bodyH/2,z,mat.frame);
       for(const z of [-(D-rail)/2,(D-rail)/2]){box(planter,W-2*post,rail,rail,0,planterBase+lowerOffset,z,mat.frame);box(planter,W-2*post,rail,rail,0,planterBase+bodyH-rail/2,z,mat.frame)}
       for(const x of [-(W-rail)/2,(W-rail)/2]){box(planter,rail,rail,D-2*post,x,planterBase+lowerOffset,0,mat.frame);box(planter,rail,rail,D-2*post,x,planterBase+bodyH-rail/2,0,mat.frame)}
@@ -165,6 +193,7 @@
       for(let x=-(W-board)/2;x<=W/2-board/2+1;x+=board)box(planter,board-3,cladH,cladT,x,cladBottom+cladH/2,-D/2-cladT/2,mat.planter);
       box(planter,W-2*post,cladH,cladT,0,cladBottom+cladH/2,D/2+cladT/2,mat.planter);
       box(planter,cladT,cladH,D-2*post,-W/2-cladT/2,cladBottom+cladH/2,0,mat.planter);box(planter,cladT,cladH,D-2*post,W/2+cladT/2,cladBottom+cladH/2,0,mat.planter);
+      }
 
       if(trellis.checked){
         const t=new THREE.Group();t.name='Existing attached trellis (separate object)';model.add(t);
@@ -196,15 +225,19 @@
     function setPanMode(){orbit.screenSpacePanning=true;orbit.mouseButtons.LEFT=panMode.checked?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;orbit.mouseButtons.RIGHT=panMode.checked?THREE.MOUSE.ROTATE:THREE.MOUSE.PAN}
     document.querySelectorAll('input:not(#panMode)').forEach(x=>x.addEventListener('input',rebuild));
     panMode.addEventListener('input',setPanMode);
+    frameOnly.addEventListener('click',()=>{for(const id of ['mainFrame','cubeFrame'])document.querySelector('#'+id).checked=true;for(const id of ['panels','hatch','enclosure','connections','isolation','planterContext','trellis','cat'])document.querySelector('#'+id).checked=false;camera.position.set(1250,760,1450);orbit.target.set(0,250,0);orbit.update();rebuild()});
+    showAll.addEventListener('click',()=>{for(const id of ['mainFrame','cubeFrame','panels','hatch','enclosure','connections','isolation','planterContext','trellis','cat'])document.querySelector('#'+id).checked=true;camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update();rebuild()});
     resetView.addEventListener('click',()=>{camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update()});
     const partDetails=document.querySelector('#partDetails');
-    const partNotes={TB:'Structural pine 90 x 45 · long top load path',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 35 · vertical load path',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · primary racking restraint',SG:'12 mm exterior structural plywood · concealed side restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'Provisional enclosure wall · finish and ventilation TBC',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
+    const partNotes={TB:'TB-01 is the 90 x 45 front bearer; TB-02 is a non-bearing 70 x 35 rear tie aligned with the joists',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 35 · all four uprights extend directly to the planter feet',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · rear cabinet wall and primary racking restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'12 mm exterior structural plywood · full side cabinet wall and racking restraint',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
     const partLinks={TB:'https://www.bowens.com.au/p/90x45mm-pine-mgp10-h3-losp-kiln-dried/',TJ:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',LG:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',FS:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',SP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',SG:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',HP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',FL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',WL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',PD:'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073'};
-    function showPart(name){const code=name.split(' - ')[0],family=code.split('-')[0],product=partLinks[family],productLink=product?`<a href="${product}" target="_blank" rel="noreferrer">Mapped product ↗</a>`:`<span class="pending">Exact product pending</span>`;partDetails.innerHTML=`<strong>${code}</strong><span>${name.slice(code.length+3)}</span><span>${partNotes[family]||'Existing planter / visual reference; not a riser BOM component'}</span><div class="links">${productLink}<a href="../deliverables/bom/planter-riser-bom.xlsx">Open BOM</a></div><span class="hint">Selected part is outlined in amber.</span>`;partDetails.hidden=false;selectedOut.textContent=name}
+    const partCategories={TB:'Main frame',TJ:'Main frame',LG:'Main frame',BL:'Main frame',BE:'Main frame',SP:'Structural panels',WL:'Structural panels',HF:'Hatch & access',HP:'Hatch & access',CD:'Hatch & access',HN:'Hardware & fixings',HL:'Hardware & fixings',HS:'Hardware & fixings',FS:'Litter fit-out',FL:'Litter fit-out',LT:'Litter fit-out',JH:'Hardware & fixings',JF:'Hardware & fixings',ST:'Hardware & fixings',SB:'Hardware & fixings',PD:'Isolation / feet',IP:'Isolation / feet'};
+    Object.assign(partNotes,{HL:'Provisional hatch latch; exact product pending',HS:'Provisional hatch stay; size after hatch weight is known',JF:'Manufacturer-approved connector fixing',SB:'M8 galvanised strap fixing with washer and nut'});
+    function showPart(name){const code=name.split(' - ')[0],family=code.split('-')[0],product=partLinks[family],productLink=product?`<a href="${product}" target="_blank" rel="noreferrer">Mapped product ↗</a>`:`<span class="pending">Exact product pending</span>`;partDetails.innerHTML=`<strong>${code}</strong><span>${name.slice(code.length+3)}</span><span>Category: ${partCategories[family]||'Existing / context'}</span><span>${partNotes[family]||'Existing planter / visual reference; not a riser BOM component'}</span><div class="links">${productLink}<a href="../deliverables/bom/planter-riser-bom.xlsx">Open BOM</a></div><span class="hint">Selected part is outlined in amber.</span>`;partDetails.hidden=false;selectedOut.textContent=name}
     function clearPart(){partDetails.hidden=true;partDetails.replaceChildren();selectedOut.textContent='No component selected'}
     const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let pointerStart=null,selectionBox=null;
     renderer.domElement.addEventListener('pointerdown',ev=>{if(ev.button===0)pointerStart={x:ev.clientX,y:ev.clientY}});
-    renderer.domElement.addEventListener('pointerup',ev=>{if(!pointerStart||ev.button!==0)return;const moved=Math.hypot(ev.clientX-pointerStart.x,ev.clientY-pointerStart.y);pointerStart=null;if(moved>5)return;const r=renderer.domElement.getBoundingClientRect();pointer.x=((ev.clientX-r.left)/r.width)*2-1;pointer.y=-((ev.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(model.children,true)[0],isBom=hit&&/^(TB|TJ|LG|BL|BE|SP|SG|HF|HP|FS|FL|WL|LT|CD|HN|PD|IP|JH|ST)-/.test(hit.object.name);if(selectionBox){scene.remove(selectionBox);selectionBox=null}if(isBom){selectionBox=new THREE.BoxHelper(hit.object,0xffcf66);scene.add(selectionBox);showPart(hit.object.name)}else clearPart()});
+    renderer.domElement.addEventListener('pointerup',ev=>{if(!pointerStart||ev.button!==0)return;const moved=Math.hypot(ev.clientX-pointerStart.x,ev.clientY-pointerStart.y);pointerStart=null;if(moved>5)return;const r=renderer.domElement.getBoundingClientRect();pointer.x=((ev.clientX-r.left)/r.width)*2-1;pointer.y=-((ev.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(model.children,true)[0],isBom=hit&&/^(TB|TJ|LG|BL|BE|SP|SG|HF|HP|FS|FL|WL|LT|CD|HN|HL|HS|PD|IP|JH|JF|ST|SB)-/.test(hit.object.name);if(selectionBox){scene.remove(selectionBox);selectionBox=null}if(isBom){selectionBox=new THREE.BoxHelper(hit.object,0xffcf66);scene.add(selectionBox);showPart(hit.object.name)}else clearPart()});
     new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}).observe(host);
     setPanMode();rebuild();renderer.setAnimationLoop(()=>{orbit.update();renderer.render(scene,camera)});
   </script>
