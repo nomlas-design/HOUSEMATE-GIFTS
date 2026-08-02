@@ -70,7 +70,7 @@
       if(selectionBox){scene.remove(selectionBox);selectionBox=null}clearPart();
       clearGroup();
       // Confirmed overall planter envelope and riser clearance.
-      const W=900,D=450,bodyH=300,clear=+clearance.value,slimFace=70,slimT=35,baseFace=45,baseT=35,e=+explode.value,footH=adjustableFeet.checked?25:6;
+      const W=900,D=450,bodyH=300,clear=+clearance.value,slimFace=70,slimT=35,uprightSize=70,baseFace=45,baseT=35,e=+explode.value,footH=adjustableFeet.checked?25:6;
       clearanceOut.textContent=clear+' mm';explodeOut.textContent=e+' mm';
       const planterBase=clear+slimFace;
       const riser=new THREE.Group();riser.name='Riser (new)';model.add(riser);
@@ -82,10 +82,10 @@
         const joistLength=D-2*slimT;
         for(const [i,x] of joistXs.entries())box(riser,slimT,slimFace,joistLength,x+(x===0?0:Math.sign(x)*e*.25),planterBase-slimFace/2+e*.45,0,mat.brace).name=`TJ-0${i+1} - depthwise joist ${joistLength}x70x35`;
         let legIndex=1;
-        for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
+        for(const x of [-(W-uprightSize)/2,(W-uprightSize)/2])for(const z of [-(D-uprightSize)/2,(D-uprightSize)/2]){
           const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
           const legH=planterBase-footH;
-          box(riser,slimFace,legH,slimT,ex,footH+legH/2,ez,mat.brace).name=`LG-0${legIndex} - direct-bearing upright ${legH}x70x35`;legIndex++;
+          box(riser,uprightSize,legH,uprightSize,ex,footH+legH/2,ez,mat.brace).name=`LG-0${legIndex} - direct-bearing upright ${legH}x70x70`;legIndex++;
         }
       }
       if(mainFrame.checked&&cubeFrame.checked){
@@ -121,9 +121,9 @@
         }
       }
       if(isolation.checked){
-        let padIndex=1;for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
+        let padIndex=1;for(const x of [-(W-uprightSize)/2,(W-uprightSize)/2])for(const z of [-(D-uprightSize)/2,(D-uprightSize)/2]){
           const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
-          box(riser,adjustableFeet.checked?104:70,footH,adjustableFeet.checked?59:45,ex,footH/2,ez,mat.pad).name=adjustableFeet.checked?`PD-0${padIndex} - 25 mm adjustable foot`:`IP-0${padIndex} - 6 mm rubber isolation pad`;padIndex++;
+          box(riser,adjustableFeet.checked?104:70,footH,adjustableFeet.checked?59:70,ex,footH/2,ez,mat.pad).name=adjustableFeet.checked?`PD-0${padIndex} - 25 mm adjustable foot`:`IP-0${padIndex} - 6 mm rubber isolation pad`;padIndex++;
         }
       }
       if(connections.checked){
@@ -204,7 +204,7 @@
     showAll.addEventListener('click',()=>{for(const id of ['mainFrame','cubeFrame','panels','hatch','enclosure','connections','isolation','planterContext','trellis','cat'])document.querySelector('#'+id).checked=true;camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update();rebuild()});
     resetView.addEventListener('click',()=>{camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update()});
     const partDetails=document.querySelector('#partDetails');
-    const partNotes={TB:'TB-01 and TB-02 are matched non-bearing 70 x 35 upper ties aligned with the joists',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 35 · all four uprights extend directly to the planter feet',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · rear cabinet wall and primary racking restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'12 mm exterior structural plywood · full side cabinet wall and racking restraint',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
+    const partNotes={TB:'TB-01 and TB-02 are matched non-bearing 70 x 35 upper ties aligned with the joists',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 70 · full support beneath each 50 x 50 planter foot',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · rear cabinet wall and primary racking restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'12 mm exterior structural plywood · full side cabinet wall and racking restraint',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
     const partLinks={TB:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',TJ:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',LG:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',FS:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',SP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',SG:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',HP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',FL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',WL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',PD:'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073'};
     const partCategories={TB:'Main frame',TJ:'Main frame',LG:'Main frame',BL:'Main frame',BE:'Main frame',SP:'Structural panels',WL:'Structural panels',HF:'Hatch & access',HP:'Hatch & access',CD:'Hatch & access',HN:'Hardware & fixings',HL:'Hardware & fixings',HS:'Hardware & fixings',FS:'Litter fit-out',FL:'Litter fit-out',LT:'Litter fit-out',JH:'Hardware & fixings',JF:'Hardware & fixings',ST:'Hardware & fixings',SB:'Hardware & fixings',PD:'Isolation / feet',IP:'Isolation / feet'};
     Object.assign(partNotes,{HL:'Provisional hatch latch; exact product pending',HS:'Provisional hatch stay; size after hatch weight is known',JF:'Manufacturer-approved connector fixing',SB:'M8 galvanised strap fixing with washer and nut'});

@@ -25,7 +25,7 @@ The original imported model remains under `models/archive/`. It is reference mat
 ## Current concept
 
 - Matching 760 x 70 x 35 front and rear upper ties.
-- 70 x 35 full-height direct-bearing uprights and short top joists.
+- 70 x 70 full-height direct-bearing uprights beneath the 50 x 50 planter feet, plus 70 x 35 short top joists.
 - Provisional 45 x 35 lower perimeter, with a concealed floor bearer.
 - Rear structural plywood shear panel and triangular side gussets.
 - Existing planter posts remain in direct bearing on the four full-height uprights; the upper ties do not carry planter dead load.

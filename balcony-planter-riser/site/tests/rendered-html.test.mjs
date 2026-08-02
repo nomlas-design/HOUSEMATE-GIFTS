@@ -34,6 +34,7 @@ test("publishes matched upper ties and both BOM destinations", async () => {
 
   assert.match(model, /TB-01 - front upper tie 760x70x35 \(non-bearing\)/);
   assert.match(model, /TB-02 - rear upper tie 760x70x35 \(non-bearing\)/);
+  assert.match(model, /LG-0\$\{legIndex\} - direct-bearing upright \$\{legH\}x70x70/);
   assert.match(model, /const joistLength=D-2\*slimT/);
   assert.match(model, /Open BOM in Google Drive/);
   assert.match(model, /Download XLSX/);

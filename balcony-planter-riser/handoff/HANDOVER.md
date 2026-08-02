@@ -2,6 +2,25 @@
 
 Append new entries at the top beneath this introduction. Do not rewrite older entries; supersede them explicitly.
 
+## 2026-08-02 - Increased direct-bearing uprights to 70 x 70
+
+### Objective
+
+Ensure the existing 50 x 50 planter feet sit fully within the uprights rather than spilling over a 70 x 35 bearing surface.
+
+### Changes
+
+- Changed LG-01 through LG-04 from 70 x 35 to 70 x 70 while retaining their 514 mm cut length and direct-bearing role.
+- Aligned the square uprights to the planter envelope outer faces, giving each foot 20 mm total additional bearing in both plan directions without shifting the planter.
+- Increased the default isolation pads to 70 x 70.
+- Split the timber purchase plan into one 2.4 m length of 70 x 70 post stock and two 2.4 m lengths of 70 x 35 rail stock.
+- Synchronized the interactive model, specification, BOM and published-site copy.
+
+### Verification and unresolved
+
+- The 50 x 50 planter feet are fully contained by the 70 x 70 upright tops in plan.
+- Exact 70 x 70 treated-post catalogue SKU, timber grade, wet planter load, connectors and balcony capacity remain to be confirmed.
+
 ## 2026-08-02 - Matched TB-01 and TB-02
 
 ### Objective

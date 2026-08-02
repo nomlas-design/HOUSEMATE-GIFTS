@@ -15,7 +15,7 @@ bom.getRange('A1:L1').merge();
 bom.getRange('A1').values = [['Planter riser — provisional component BOM']];
 bom.getRange('A2:L2').merge();
 bom.getRange('A2').values = [['Model v2 · dimensions reflect the current 450 mm clearance and 90 × 45 mm main framing']];
-bom.getRange('A2').values = [['Model v5 enclosure study - matched 70 x 35 upper ties; direct-bearing uprights; 45 x 35 lower frame']];
+bom.getRange('A2').values = [['Model v6 enclosure study - matched 70 x 35 upper ties; 70 x 70 direct-bearing uprights; 45 x 35 lower frame']];
 bom.getRange('A4:L4').values = [[
   'Group','Category','Component IDs','Description','Material / section','Qty','Finished length (mm)','Width (mm)','Thickness (mm)','Total linear (m)','Status','Model mapping'
 ]];
@@ -40,7 +40,7 @@ const rowsOptimised = [
  ['Upper tie','Main frame','TB-01','Front upper tie aligned with joists (non-bearing)','H3 structural pine 70x35',1,760,70,35,null,'Provisional','Matches TB-02 between the full-height front uprights'],
  ['Upper tie','Main frame','TB-02','Rear upper tie aligned with joists (non-bearing)','H3 structural pine 70x35',1,760,70,35,null,'Provisional','Meets the rear ends of the top joists between full-height uprights'],
  ['Top frame','Main frame','TJ-01 - TJ-03','Depthwise top joists','H3 structural pine 70x35',3,380,70,35,null,'Provisional','Span cleanly between the matched 35 mm-thick upper ties'],
- ['Vertical frame','Main frame','LG-01 - LG-04','Full-height direct-bearing uprights above 6 mm pads','H3 structural pine 70x35',4,514,70,35,null,'Provisional','All four extend directly to the planter feet'],
+ ['Vertical frame','Main frame','LG-01 - LG-04','Full-height direct-bearing uprights above 6 mm pads','H3 structural pine 70x70',4,514,70,70,null,'Provisional','Each 70 x 70 upright fully supports its 50 x 50 planter foot'],
  ['Base frame','Main frame','BL-01, BL-02','Front and rear bottom rails','H3 structural pine 45x35',2,760,45,35,null,'Provisional','Reduced section; ties legs and supports litter floor'],
  ['Base frame','Main frame','BE-01, BE-02','Left and right bottom rails','H3 structural pine 45x35',2,380,45,35,null,'Provisional','Reduced section; fits between front and rear legs'],
  ['Cabinet walls','Structural panels','SP-01','Structural rear cabinet wall','12 mm exterior structural plywood',1,760,399,12,null,'Detail required','Continuous fixing around supported rear frame edges'],
@@ -59,7 +59,7 @@ const rowsOptimised = [
  ['Hardware','Hardware & fixings','JF-01 - JF-12','Joist connector fixing screws','Manufacturer-approved connector screws',12,35,6,null,null,'Select with connector','Model shows two screws at each end of each top joist; final schedule governs quantity'],
  ['Hardware','Hardware & fixings','ST-01 - ST-04','Concealed post-to-upright splice straps','Galvanised steel flat strap',4,300,40,3,null,'Detail required','One flush strap joins each planter post to its corresponding full-height upright; the upper tie remains non-bearing'],
  ['Hardware','Hardware & fixings','SB-01 - SB-08','Upper and lower strap bolts','M8 hot-dip galvanised bolt, nut and washers',8,60,8,null,null,'Provisional','Straps restrain sliding/uplift; bolts do not carry planter dead load'],
- ['Isolation','Isolation / feet','IP-01 - IP-04','Low-profile isolation pads','EPDM / exterior rubber',4,70,45,6,null,'Default','Protects balcony and timber without unnecessary lift'],
+ ['Isolation','Isolation / feet','IP-01 - IP-04','Low-profile isolation pads','EPDM / exterior rubber',4,70,70,6,null,'Default','Matches the 70 x 70 uprights and protects balcony and timber without unnecessary lift'],
  ['Isolation','Isolation / feet','PD-01 - PD-04','Optional adjustable balcony feet','UV-stable polymer',4,104,59,25,null,'Optional','Use only if balcony fall prevents stable level bearing'],
 ];
 bom.getRange(`A5:L${4+rowsOptimised.length}`).values = rowsOptimised;
@@ -103,7 +103,7 @@ const arows=[
 const arowsOptimised=[
  ['Clear space below upper ties',450,'User confirmed','Sets upright length; the 70 mm tie depth brings the planter base to 520 mm above the balcony'],
  ['Upper tie section','70 x 35 mm','Optimised','TB-01 and TB-02 match and remain outside the direct planter bearing path'],
- ['Primary frame section','70 x 35 mm','Optimised','Full-height uprights, matched upper ties, short top joists and floor bearer'],
+ ['Primary structural sections','70 x 70 uprights; 70 x 35 rails','Optimised','Square uprights fully support the 50 x 50 planter feet; rails remain the lighter section'],
  ['Lower frame section','45 x 35 mm','Provisional','Reduced because it ties legs and supports the light litter fit-out, not the planter'],
  ['Racking system','12 mm structural rear and side cabinet walls','Provisional','The cabinet walls replace separate gussets and require supported edges plus an exterior-rated fixing schedule'],
  ['Planter footprint','900 x 450 mm','User confirmed','Owner sketch overrides earlier 400 mm product estimate'],
@@ -115,7 +115,7 @@ const arowsOptimised=[
  ['Litter tray envelope','2 x 350 x 330 x 110 mm','Unconfirmed','Placeholder fit within 760 x 380 mm floor; measure actual trays'],
  ['Feet','6 mm rubber pads default; 25 mm adjustable optional','Provisional','Use adjustable feet only if balcony fall prevents stable bearing'],
  ['Hatch frame section','42 x 19 mm','Non-structural','Top-hinged access hatch with provisional 230 mm cat flap'],
- ['Stock families','70x35; 45x35; 42x19; sheet material','Optimised','No 90 x 45 framing remains; both upper ties use the primary 70 x 35 stock'],
+ ['Stock families','70x70; 70x35; 45x35; 42x19; sheet material','Optimised','Three structural timber sections; 42 x 19 is non-structural hatch trim'],
 ];
 assumptions.getRange(`A4:D${3+arowsOptimised.length}`).values=arowsOptimised;
 assumptions.getRange('A1:D1').format={fill:'#2F4A3D',font:{bold:true,color:'#FFFFFF',size:16}};
@@ -139,7 +139,8 @@ const catalogueRows=[
  ['PD-01 – PD-04','Bunnings','Builders Edge 25–40 mm Minifoot Pedestal Feet','I/N 2450073','Each',4,9.14,'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073','Rated >200 kg each by listing; final floor pressure and balcony capacity still require checking'],
 ];
 const catalogueRowsOptimised=[
- ['TB, TJ, LG, FS','Bowens','70x35 mm Treated Pine MGP10 H3 LOSP Kiln Dried','SKU MLPT070035','2.4 m',3,null,'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/','Three lengths cover four uprights, both matched upper ties, three top joists and the floor bearer'],
+ ['LG','Bowens','70x70 mm seasoned H3 treated pine post','Confirm exact SKU','2.4 m',1,null,'','One length covers all four 514 mm uprights plus kerf; confirm grade, treatment and local stock before purchase'],
+ ['TB, TJ, FS','Bowens','70x35 mm Treated Pine MGP10 H3 LOSP Kiln Dried','SKU MLPT070035','2.4 m',2,null,'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/','Two lengths cover both matched upper ties, three top joists and the floor bearer'],
  ['BL, BE','Either','H3 structural pine approximately 45x35 mm','Confirm exact item','2.4 m',1,null,'','Reduced lower frame section; confirm graded treated stock before purchase'],
  ['SP, WL, HP, FL','Bowens','Pine Plywood F8 Structural Black 12 mm','SKU PHPB122412','2400x1200x12 mm sheet',1,75.90,'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1','Rear and side structural walls, hatch and floor nest from one common sheet; seal every cut edge'],
  ['HF','Either','Exterior dressed timber approximately 42x19 mm','Confirm exact item','2.4 m',1,null,'','Non-structural hatch stock; exact individual product still to be selected'],
@@ -147,7 +148,7 @@ const catalogueRowsOptimised=[
  ['Connector fasteners','Bunnings','Pryda Timber Connector Screw 12G x 35 mm Hex Head','I/N 0084754','Pack of 50',1,null,'https://www.bunnings.com.au/pryda-timber-connector-screw-12g-x-35mm-hex-head-pack-50_p0084754','Use only where permitted by the selected connector schedule'],
  ['ST-01 - ST-04','Either','Galvanised flat splice strap approximately 300 x 40 x 3 mm','Confirm exact item','Each',4,null,'','Concealed detail replaces timber capture blocks and angle brackets; drill pattern must avoid timber edges'],
  ['ST fixing bolts','Bunnings','Zenith M8 x 60 mm Hot Dipped Galvanised Cup Head Bolt and Nut','I/N 2310034','Each',8,0.74,'https://www.bunnings.com.au/zenith-m8-x-60mm-hot-dipped-galvanised-cup-head-bolt-and-nut-each_p2310034','Two per strap plus suitable M8 galvanised washers; verify final grip length'],
- ['IP-01 - IP-04','Either','Exterior EPDM isolation pad approximately 70 x 45 x 6 mm','Confirm exact item','Each',4,null,'','Default option; can be cut from a suitable exterior rubber sheet'],
+ ['IP-01 - IP-04','Either','Exterior EPDM isolation pad approximately 70 x 70 x 6 mm','Confirm exact item','Each',4,null,'','Default option; can be cut from a suitable exterior rubber sheet'],
  ['PD-01 - PD-04','Bunnings','Builders Edge 25-40 mm Minifoot Pedestal Feet','I/N 2450073','Each',4,9.14,'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073','Optional only if balcony fall requires levelling'],
 ];
 catalogue.getRange(`A5:I${4+catalogueRowsOptimised.length}`).values=catalogueRowsOptimised;
@@ -189,16 +190,16 @@ const cuts=[
  ['PLY-01','PHPB122412 — 12 mm F8 exterior ply',2400,'HP-01',610,1,3,null,null,'Cross dimension 225 mm; seal all cut edges'],
 ];
 const cutsOptimised=[
- ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'LG-01',514,1,3,null,null,'Full-height direct-bearing upright'],
- ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'LG-02',514,2,3,null,null,'Full-height direct-bearing upright'],
- ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'LG-03',514,3,3,null,null,'Full-height direct-bearing upright'],
- ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'LG-04',514,4,0,null,null,'335 mm remainder'],
- ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'TB-01',760,1,3,null,null,'Non-bearing front tie aligned with joists'],
- ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'TB-02',760,2,3,null,null,'Matching non-bearing rear tie'],
- ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-01',380,3,3,null,null,''],
- ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-02',380,4,0,null,null,'111 mm remainder'],
- ['70-03','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-03',380,1,3,null,null,''],
- ['70-03','MLPT070035 - 70x35 H3 LOSP',2400,'FS-01',380,2,0,null,null,'1637 mm remainder'],
+ ['70SQ-01','70x70 H3 treated pine post - exact SKU TBC',2400,'LG-01',514,1,3,null,null,'Full-height direct-bearing upright'],
+ ['70SQ-01','70x70 H3 treated pine post - exact SKU TBC',2400,'LG-02',514,2,3,null,null,'Full-height direct-bearing upright'],
+ ['70SQ-01','70x70 H3 treated pine post - exact SKU TBC',2400,'LG-03',514,3,3,null,null,'Full-height direct-bearing upright'],
+ ['70SQ-01','70x70 H3 treated pine post - exact SKU TBC',2400,'LG-04',514,4,0,null,null,'335 mm remainder'],
+ ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'TB-01',760,1,3,null,null,'Non-bearing front tie aligned with joists'],
+ ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'TB-02',760,2,3,null,null,'Matching non-bearing rear tie'],
+ ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-01',380,3,3,null,null,''],
+ ['70-01','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-02',380,4,0,null,null,'111 mm remainder'],
+ ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'TJ-03',380,1,3,null,null,''],
+ ['70-02','MLPT070035 - 70x35 H3 LOSP',2400,'FS-01',380,2,0,null,null,'1637 mm remainder'],
  ['45-01','45x35 H3 structural pine - exact item TBC',2400,'BL-01',760,1,3,null,null,'Fits between front legs'],
  ['45-01','45x35 H3 structural pine - exact item TBC',2400,'BL-02',760,2,3,null,null,'Fits between rear legs'],
  ['45-01','45x35 H3 structural pine - exact item TBC',2400,'BE-01',380,3,3,null,null,''],
