@@ -24,7 +24,6 @@
   <header><h1>Planter + separate trellis on balcony riser</h1><p><span class="confirmed">Green: owner measurements</span> · <span class="unconfirmed">Amber: retailer-listing dimensions</span></p></header>
   <div class="controls">
     <label>Clear space beneath <span id="clearanceOut">450 mm</span><input id="clearance" type="range" min="300" max="650" step="25" value="450"></label>
-    <label>Riser beam depth <span id="timberOut">90 mm</span><input id="timber" type="range" min="70" max="120" step="5" value="90"></label>
     <label>Explode riser planks <span id="explodeOut">0 mm</span><input id="explode" type="range" min="0" max="180" step="10" value="0"></label>
     <fieldset class="control-group"><legend>Added structure categories</legend>
       <label class="check"><input id="mainFrame" type="checkbox" checked> Main frame</label>
@@ -71,17 +70,17 @@
       if(selectionBox){scene.remove(selectionBox);selectionBox=null}clearPart();
       clearGroup();
       // Confirmed overall planter envelope and riser clearance.
-      const W=900,D=450,bodyH=300,clear=+clearance.value,beamH=+timber.value,topT=45,slimFace=70,slimT=35,baseFace=45,baseT=35,e=+explode.value,footH=adjustableFeet.checked?25:6;
-      clearanceOut.textContent=clear+' mm';timberOut.textContent=beamH+' mm';explodeOut.textContent=e+' mm';
-      const topBottom=clear,topY=clear+beamH/2,planterBase=clear+beamH;
+      const W=900,D=450,bodyH=300,clear=+clearance.value,slimFace=70,slimT=35,baseFace=45,baseT=35,e=+explode.value,footH=adjustableFeet.checked?25:6;
+      clearanceOut.textContent=clear+' mm';explodeOut.textContent=e+' mm';
+      const planterBase=clear+slimFace;
       const riser=new THREE.Group();riser.name='Riser (new)';model.add(riser);
       const joistXs=[-(W-slimFace)/2,0,(W-slimFace)/2];
-      // Optimised frame: all four planter feet bear on full-height uprights; TB-02 ties the rear pair at joist level.
+      // Optimised frame: all four planter feet bear on full-height uprights; matched ties connect the front and rear pairs.
       if(mainFrame.checked){
-        box(riser,W,beamH,topT,0,topY,-(D-topT)/2-e,mat.riser).name=`TB-01 - front top bearer 900x${beamH}x45`;
+        box(riser,W-2*slimFace,slimFace,slimT,0,planterBase-slimFace/2,-(D-slimT)/2-e,mat.brace).name=`TB-01 - front upper tie 760x70x35 (non-bearing)`;
         box(riser,W-2*slimFace,slimFace,slimT,0,planterBase-slimFace/2,(D-slimT)/2+e,mat.brace).name=`TB-02 - rear upper tie 760x70x35 (non-bearing)`;
-        const joistLength=D-topT-slimT;
-        for(const [i,x] of joistXs.entries())box(riser,slimT,slimFace,joistLength,x+(x===0?0:Math.sign(x)*e*.25),planterBase-slimFace/2+e*.45,(slimT-topT)/4,mat.brace).name=`TJ-0${i+1} - depthwise joist ${joistLength}x70x35`;
+        const joistLength=D-2*slimT;
+        for(const [i,x] of joistXs.entries())box(riser,slimT,slimFace,joistLength,x+(x===0?0:Math.sign(x)*e*.25),planterBase-slimFace/2+e*.45,0,mat.brace).name=`TJ-0${i+1} - depthwise joist ${joistLength}x70x35`;
         let legIndex=1;
         for(const x of [-(W-slimFace)/2,(W-slimFace)/2])for(const z of [-(D-slimT)/2,(D-slimT)/2]){
           const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;
@@ -127,34 +126,10 @@
           box(riser,adjustableFeet.checked?104:70,footH,adjustableFeet.checked?59:45,ex,footH/2,ez,mat.pad).name=adjustableFeet.checked?`PD-0${padIndex} - 25 mm adjustable foot`:`IP-0${padIndex} - 6 mm rubber isolation pad`;padIndex++;
         }
       }
-      if(false){
-      // Three depthwise supports: two perimeter ends plus a centre joist.
-      box(riser,W,beamH,memberT,0,topY,-(D-memberT)/2-e,mat.riser).name='TB-01 — front top bearer 900×90×45';box(riser,W,beamH,memberT,0,topY,(D-memberT)/2+e,mat.riser).name='TB-02 — rear top bearer 900×90×45';
-      const joistXs=[-(W-90)/2,0,(W-90)/2];
-      for(const [i,x] of joistXs.entries())box(riser,memberT,beamH,D-2*memberT,x+(x===0?0:Math.sign(x)*e*.25),topY+e*.45,0,mat.riser).name=`TJ-0${i+1} — depthwise joist 310×90×45`;
-      let legIndex=1;for(const x of [-398,398])for(const z of [-170,170]){const ex=x+Math.sign(x)*e*.45,ez=z+Math.sign(z)*e*.45;box(riser,90,clear-footH,memberT,ex,footH+(clear-footH)/2,ez,mat.riser).name=`LG-0${legIndex} — corner leg 425×90×45`;box(riser,104,footH,59,ex,footH/2,ez,mat.pad).name=`PD-0${legIndex} — 25–40 mm adjustable foot`;legIndex++}
-      // Cube-frame option: a continuous lower perimeter ties all four legs together.
-      const baseY=memberT/2;
-      if(cubeFrame.checked){
-        box(riser,W,memberT,90,0,footH+memberT/2,-(D-90)/2-e*.75,mat.riser).name='BL-01 — front bottom rail 900×90×45';box(riser,W,memberT,90,0,footH+memberT/2,(D-90)/2+e*.75,mat.riser).name='BL-02 — rear bottom rail 900×90×45';
-        box(riser,90,memberT,D-180,-(W-90)/2-e*.75,footH+memberT/2,0,mat.riser).name='BE-01 — left bottom rail 220×90×45';box(riser,90,memberT,D-180,(W-90)/2+e*.75,footH+memberT/2,0,mat.riser).name='BE-02 — right bottom rail 220×90×45';
-      }
-      const y0=75,y1=topBottom-45,zRear=(D-memberT)/2+2;
-      if(rearBrace.checked){const rearGroup=new THREE.Group();rearGroup.position.z=e;riser.add(rearGroup);brace(rearGroup,new THREE.Vector3(-(W-90)/2,y0,zRear),new THREE.Vector3(0,y1,zRear),35).scale.x=2;rearGroup.children[0].name='RB-01 — rear brace 523×70×35';brace(rearGroup,new THREE.Vector3((W-90)/2,y0,zRear),new THREE.Vector3(0,y1,zRear),35).scale.x=2;rearGroup.children[1].name='RB-02 — rear brace 523×70×35'}
-      if(endBraces.checked){let ei=1;for(const sx of [-1,1]){const endGroup=new THREE.Group();endGroup.position.x=sx*e;riser.add(endGroup);const x=sx*((W-90)/2+2);const b=brace(endGroup,new THREE.Vector3(x,y0,-(D-memberT)/2),new THREE.Vector3(x,y1,(D-memberT)/2),35);b.scale.x=2;b.name=`EB-0${ei} — end brace 485×70×35`;ei++}}
-      if(hatch.checked){
-        // Non-structural front hatch shown inset between the cube frame members.
-        const hatchW=W-2*90-40,hatchH=clear-beamH-memberT-20;
-        const hatchPanelW=hatchW-70,hatchPanelH=hatchH-70;
-        box(riser,hatchPanelW,hatchPanelH,12,0,memberT+12+hatchH/2,-D/2+6-e,mat.hatch).name='HP-01 — hatch panel 610×225×12';
-        box(riser,hatchW,35,70,0,memberT+17.5,-D/2+35-e,mat.frame).name='HF-B — hatch bottom rail 680×70×35';box(riser,hatchW,35,70,0,clear-beamH-17.5,-D/2+35-e,mat.frame).name='HF-T — hatch top rail 680×70×35';
-        let hi=0;for(const x of [-(hatchW-35)/2,(hatchW-35)/2]){box(riser,35,hatchH,70,x,memberT+12+hatchH/2,-D/2+35-e,mat.frame).name=hi++===0?'HF-L — hatch stile 295×70×35':'HF-R — hatch stile 295×70×35'}
-      }
-      }
       if(connections.checked){
         const hardware=new THREE.Group();hardware.name='Provisional connectors and removable hold-downs';hardware.visible=e===0;model.add(hardware);
         // Joist-hanger plates at both ends of each depthwise joist.
-        for(const [i,x] of joistXs.entries())for(const [end,z] of [-(D-2*topT)/2,(D-2*topT)/2].entries()){
+        for(const [i,x] of joistXs.entries())for(const [end,z] of [-(D-2*slimT)/2,(D-2*slimT)/2].entries()){
           const code=`JH-0${i+1}`;
           box(hardware,slimT+12,slimFace-12,4,x,planterBase-slimFace/2,z,mat.steel).name=`${code} - 35x70 joist connector`;
           bolt(hardware,x,planterBase-52,z-3,'z').name=`JF-${String(i*4+end*2+1).padStart(2,'0')} - connector fixing screw`;
@@ -229,8 +204,8 @@
     showAll.addEventListener('click',()=>{for(const id of ['mainFrame','cubeFrame','panels','hatch','enclosure','connections','isolation','planterContext','trellis','cat'])document.querySelector('#'+id).checked=true;camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update();rebuild()});
     resetView.addEventListener('click',()=>{camera.position.set(1550,1150,1900);orbit.target.set(0,1150,0);orbit.update()});
     const partDetails=document.querySelector('#partDetails');
-    const partNotes={TB:'TB-01 is the 90 x 45 front bearer; TB-02 is a non-bearing 70 x 35 rear tie aligned with the joists',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 35 · all four uprights extend directly to the planter feet',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · rear cabinet wall and primary racking restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'12 mm exterior structural plywood · full side cabinet wall and racking restraint',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
-    const partLinks={TB:'https://www.bowens.com.au/p/90x45mm-pine-mgp10-h3-losp-kiln-dried/',TJ:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',LG:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',FS:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',SP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',SG:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',HP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',FL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',WL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',PD:'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073'};
+    const partNotes={TB:'TB-01 and TB-02 are matched non-bearing 70 x 35 upper ties aligned with the joists',TJ:'Structural pine 70 x 35 · short cross-member',LG:'Structural pine 70 x 35 · all four uprights extend directly to the planter feet',BL:'45 x 35 lower tie · supports removable litter floor',BE:'45 x 35 lower end tie · supports removable litter floor',SP:'12 mm exterior structural plywood · rear cabinet wall and primary racking restraint',HF:'Exterior dressed timber 42 x 19 · non-structural hatch',HP:'12 mm exterior plywood · hatch infill',FS:'Concealed 70 x 35 offcut · supports floor centreline',FL:'Sealed removable 12 mm floor · add washable liner',WL:'12 mm exterior structural plywood · full side cabinet wall and racking restraint',LT:'Unconfirmed tray envelope · replace with measured tray size',CD:'Provisional cat flap within lift-up hatch',HN:'Continuous top hinge concept',JH:'Rated proprietary connector · final product pending',ST:'Concealed galvanised strap · lateral and uplift restraint only',PD:'Adjustable balcony pedestal foot',IP:'Low-profile rubber isolation pad'};
+    const partLinks={TB:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',TJ:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',LG:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',FS:'https://www.bowens.com.au/p/70x35mm-pine-mgp10-h3-losp-kiln-dried/',SP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',SG:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',HP:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',FL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',WL:'https://www.bowens.com.au/p/pine-plywood-f8-structural-black/?size=2400x1200x12mm&uom=ST%7C1',PD:'https://www.bunnings.com.au/builders-edge-25-40mm-minifoot-pedestal-feet_p2450073'};
     const partCategories={TB:'Main frame',TJ:'Main frame',LG:'Main frame',BL:'Main frame',BE:'Main frame',SP:'Structural panels',WL:'Structural panels',HF:'Hatch & access',HP:'Hatch & access',CD:'Hatch & access',HN:'Hardware & fixings',HL:'Hardware & fixings',HS:'Hardware & fixings',FS:'Litter fit-out',FL:'Litter fit-out',LT:'Litter fit-out',JH:'Hardware & fixings',JF:'Hardware & fixings',ST:'Hardware & fixings',SB:'Hardware & fixings',PD:'Isolation / feet',IP:'Isolation / feet'};
     Object.assign(partNotes,{HL:'Provisional hatch latch; exact product pending',HS:'Provisional hatch stay; size after hatch weight is known',JF:'Manufacturer-approved connector fixing',SB:'M8 galvanised strap fixing with washer and nut'});
     function showPart(name){const code=name.split(' - ')[0],family=code.split('-')[0],product=partLinks[family],productLink=product?`<a href="${product}" target="_blank" rel="noreferrer">Mapped product ↗</a>`:`<span class="pending">Exact product pending</span>`;partDetails.innerHTML=`<strong>${code}</strong><span>${name.slice(code.length+3)}</span><span>Category: ${partCategories[family]||'Existing / context'}</span><span>${partNotes[family]||'Existing planter / visual reference; not a riser BOM component'}</span><div class="links">${productLink}<a href="https://docs.google.com/spreadsheets/d/17lhc3XEj4TIMcd2DnRqaSLjiXf868RQOQRitDx6vPOU/edit" target="_blank" rel="noreferrer">Open BOM in Google Drive ↗</a><a href="../deliverables/bom/planter-riser-bom.xlsx" download>Download XLSX</a></div><span class="hint">Selected part is outlined in amber.</span>`;partDetails.hidden=false;selectedOut.textContent=name}

@@ -2,6 +2,28 @@
 
 Append new entries at the top beneath this introduction. Do not rewrite older entries; supersede them explicitly.
 
+## 2026-08-02 - Matched TB-01 and TB-02
+
+### Objective
+
+Make the front and rear upper ties identical and remove unnecessary 90 x 45 framing.
+
+### Changes
+
+- Changed TB-01 from a 900 x 90 x 45 front bearer to a 760 x 70 x 35 non-bearing front upper tie matching TB-02.
+- Kept all four planter feet in direct bearing through LG-01 to LG-04; both upper ties now sit between the uprights.
+- Lengthened TJ-01 to TJ-03 to 380 mm so they meet the two 35 mm-thick ties without gaps.
+- Shortened LG-01 to LG-04 to 514 mm above the default 6 mm pads, preserving 450 mm clear space below the upper ties.
+- Removed the obsolete beam-depth slider and the dormant legacy 90 x 45 model block.
+- Revised the purchase plan to three 2.4 m lengths of 70 x 35; no 90 x 45 framing remains.
+- Regenerated the XLSX BOM and resynced the native Google Drive BOM, including its table ranges and total row.
+
+### Verification and unresolved
+
+- Model and published-site source use matching TB geometry.
+- Local workbook formula scan and Google Sheet `#REF!` scans returned no errors.
+- This remains exploratory: timber grade, wet planter load, connector schedule and balcony capacity still require confirmation.
+
 ## 2026-08-02 - Published model BOM link
 
 ### Objective
