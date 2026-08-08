@@ -13,32 +13,32 @@ This repository is shared by Zeph and Dec for home-design projects. `AGENTS.md` 
 
 ## Current project boundaries
 
-- `balcony-planter-riser/` contains the planter-riser and enclosed litter-tray cabinet project.
-- `livingroom-balcony` and `og-balcony` are legacy Git-link entries. They have no `.gitmodules` mapping and their referenced source is not available through this repository.
-- Dec intends to supply the source and combine the three projects into one unified project.
+- `OG projects/balcony-planter-riser/` contains the original planter-riser and enclosed litter-tray cabinet project.
+- `OG projects/livingroom-balcony/` and `OG projects/og-balcony/` preserve the names of legacy Git-link entries. Their referenced source was not available through this repository, so each currently contains only a placeholder README.
+- Dec intends to supply the missing source and combine the three projects into one unified project.
 
-Do not remove, rename or archive these three project entries until the unified replacement has been added, verified and explicitly handed over.
+Treat everything under `OG projects/` as pre-unification reference material. Do not remove it until the unified replacement has been added, verified and explicitly handed over.
 
 ## Balcony planter riser
 
-Before changing the design:
+Before changing the original design:
 
-1. Read `balcony-planter-riser/PROJECT.md`, `balcony-planter-riser/model-spec.json`, and the latest entry in `balcony-planter-riser/handoff/HANDOVER.md`.
+1. Read `OG projects/balcony-planter-riser/PROJECT.md`, `OG projects/balcony-planter-riser/model-spec.json`, and the latest entry in `OG projects/balcony-planter-riser/handoff/HANDOVER.md`.
 2. Treat owner measurements as authoritative. Dimensions supplied by a product listing are retailer/listing-derived, regardless of which contributor recorded them.
-3. Keep `balcony-planter-riser/models/planter-stand-model.html`, `balcony-planter-riser/model-spec.json`, and `balcony-planter-riser/deliverables/bom/planter-riser-bom.xlsx` consistent whenever component geometry or IDs change.
-4. Put new source photographs and sketches under `balcony-planter-riser/references/`. Use `balcony-planter-riser/references/housemate/` where contributor provenance would otherwise be unclear.
-5. Append a concise entry to `balcony-planter-riser/handoff/HANDOVER.md` before handing work to another person or agent.
+3. Keep `OG projects/balcony-planter-riser/models/planter-stand-model.html`, `OG projects/balcony-planter-riser/model-spec.json`, and `OG projects/balcony-planter-riser/deliverables/bom/planter-riser-bom.xlsx` consistent whenever component geometry or IDs change.
+4. Put new source photographs and sketches under `OG projects/balcony-planter-riser/references/`. Use `OG projects/balcony-planter-riser/references/housemate/` where contributor provenance would otherwise be unclear.
+5. Append a concise entry to `OG projects/balcony-planter-riser/handoff/HANDOVER.md` before handing work to another person or agent.
 6. Do not treat this exploratory design as structural certification. Keep unknown loads, fasteners, balcony capacity and unconfirmed products explicit.
 
 ## Unification handover
 
 When Dec supplies the unified project:
 
-1. Replace the legacy Git links with recoverable source content.
+1. Replace the two placeholder directories with recoverable source content where available.
 2. Add the unified project as an ordinary repository folder unless a documented submodule arrangement is intentionally chosen.
 3. Verify that all required source files, references, deliverables and provenance notes are preserved.
 4. Update this file and `README.md` with the new canonical project path and any changed build or publication workflow.
-5. Only after verification and explicit approval, move the three pre-unification projects under `archive/pre-unification/`.
+5. Only after verification and explicit approval, move or remove the pre-unification material under `OG projects/`.
 
 ## Archive policy
 
